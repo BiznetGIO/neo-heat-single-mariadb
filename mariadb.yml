@@ -69,6 +69,7 @@ resources:
     networks:
       - port: {get_resource: define_port}
     properties:
+      name: { get_param: 'OS::stack_name' }
       image: CentOS 7.3
       flavor: { get_param: flavor }
       key_name: { get_param: key_name }
