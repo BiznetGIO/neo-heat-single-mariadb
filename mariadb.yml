@@ -80,7 +80,28 @@ resources:
             yum -y install mariadb mariadb-server
             touch /var/log/mariadb/mariadb.log
             chown mysql.mysql /var/log/mariadb/mariadb.log
-            sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
+            # sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/my.cnf
+            cat << EOF > /etc/my.cnf
+            [mysqld]
+            datadir=/var/lib/mysql
+            socket=/var/lib/mysql/mysql.sock
+            # Disabling symbolic-links is recommended to prevent assorted security risks
+            symbolic-links=0
+            # Settings user and group are ignored when systemd is used.
+            # If you need to run mysqld under a different user or group,
+            # customize your systemd unit file for mariadb according to the
+            # instructions in http://fedoraproject.org/wiki/Systemd
+            bind-address = 0.0.0.0
+
+            [mysqld_safe]
+            log-error=/var/log/mariadb/mariadb.log
+            pid-file=/var/run/mariadb/mariadb.pid
+
+            #
+            # include all files from the config directory
+            #
+            !includedir /etc/my.cnf.d
+            EOF
             systemctl enable mariadb.service
             systemctl start mariadb.service
             # Setup MySQL root password and create a user
